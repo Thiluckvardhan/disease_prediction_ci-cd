@@ -2,7 +2,7 @@ pipeline {
   agent any
 
   environment {
-    DOCKERHUB_REPO = "thiluck/disease:latest"   // e.g. thiluck/disease:latest
+    DOCKERHUB_REPO = "thiluck/disease:latest"
   }
 
   stages {
