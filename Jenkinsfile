@@ -1,6 +1,6 @@
 pipeline {
   agent any
-
+// hi
   environment {
     DOCKERHUB_REPO = "docker.io/thiluck/disease:latest"
   }
