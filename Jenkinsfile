@@ -1,11 +1,9 @@
 pipeline {
   agent any
-// hi
-  environment {
-    DOCKERHUB_REPO = "docker.io/thiluck/disease:latest"
-  }
 
-  options { ansiColor('xterm') }
+  environment {
+    DOCKERHUB_REPO = "thiluck/disease:latest"   // e.g. thiluck/disease:latest
+  }
 
   stages {
     stage('Checkout') {
@@ -16,17 +14,23 @@ pipeline {
 
     stage('Build Docker Image') {
       steps {
-        sh 'docker build -t disease:build .'
+        bat '''
+        where docker
+        docker version
+        docker build -t local-disease:build .
+        '''
       }
     }
 
     stage('Login & Push to Docker Hub') {
       steps {
         withCredentials([usernamePassword(credentialsId: 'dockerhub_creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
-          sh '''
-            echo "$DH_PASS" | docker login -u "$DH_USER" --password-stdin
-            docker tag local-disease:build ${DOCKERHUB_REPO}
-            docker push ${DOCKERHUB_REPO}
+          bat '''
+          @echo off
+          echo %DH_PASS% | docker login -u %DH_USER% --password-stdin
+          docker tag local-disease:build %DOCKERHUB_REPO%
+          docker push %DOCKERHUB_REPO%
+          docker manifest inspect %DOCKERHUB_REPO%
           '''
         }
       }
@@ -34,8 +38,6 @@ pipeline {
   }
 
   post {
-    success {
-      echo "✅ Docker image successfully pushed to ${DOCKERHUB_REPO}"
-    }
+    success { echo "✅ Pushed to ${env.DOCKERHUB_REPO}" }
   }
 }
