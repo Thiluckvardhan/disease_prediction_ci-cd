@@ -1,43 +1,49 @@
 pipeline {
-  agent any
+    agent any
 
-  environment {
-    DOCKERHUB_REPO = "thiluck/disease:latest"
-  }
-
-  stages {
-    stage('Checkout') {
-      steps {
-        checkout scm
-      }
+    environment {
+        DOCKERHUB_REPO = "thiluck/disease:latest"  // your Docker Hub image
     }
 
-    stage('Build Docker Image') {
-      steps {
-        bat '''
-        where docker
-        docker version
-        docker build -t local-disease:build .
-        '''
-      }
-    }
-
-    stage('Login & Push to Docker Hub') {
-      steps {
-        withCredentials([usernamePassword(credentialsId: 'dockerhub_creds', usernameVariable: 'DH_USER', passwordVariable: 'DH_PASS')]) {
-          bat '''
-          @echo off
-          echo %DH_PASS% | docker login -u %DH_USER% --password-stdin
-          docker tag local-disease:build %DOCKERHUB_REPO%
-          docker push %DOCKERHUB_REPO%
-          docker manifest inspect %DOCKERHUB_REPO%
-          '''
+    stages {
+        stage('Checkout') {
+            steps {
+                checkout scm
+            }
         }
-      }
-    }
-  }
 
-  post {
-    success { echo "✅ Pushed to ${env.DOCKERHUB_REPO}" }
-  }
+        stage('Build Docker Image') {
+            steps {
+                bat '''
+                where docker
+                docker version
+                docker build -t local-disease:build .
+                '''
+            }
+        }
+
+        stage('Docker Login') {
+            steps {
+                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
+                }
+            }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                bat '''
+                docker tag local-disease:build %DOCKERHUB_REPO%
+                docker push %DOCKERHUB_REPO%
+                docker manifest inspect %DOCKERHUB_REPO%
+                '''
+            }
+        }
+    }
+
+    post {
+        success {
+            echo "✅ Docker image successfully pushed to ${env.DOCKERHUB_REPO}"
+        }
+    }
 }
