@@ -2,7 +2,7 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_REPO = "thiluck/disease:latest"  // your Docker Hub image
+        DOCKERHUB_REPO = "thiluck/disease:latest"
     }
 
     stages {
