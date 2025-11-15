@@ -1,47 +1,52 @@
 pipeline {
-    agent any
+  agent any
 
-    stages {
-        stage('Checkout') {
-            steps { 
-                echo "Checkout stage (empty)"
-            }
-        }
-
-        stage('Build Docker Image') {
-            steps { 
-                echo "Build stage (empty)"
-            }
-        }
-
-        stage('Docker Login') {
-            steps { 
-                echo "Docker login stage (empty)"
-            }
-        }
-
-        stage('Push to Docker Hub') {
-            steps { 
-                echo "Push stage (empty)"
-            }
-        }
-
-        stage('Terraform Apply') {
-            steps { 
-                echo "Terraform stage (empty)"
-            }
-        }
-
-        stage('Ansible Deploy') {
-            steps { 
-                echo "Ansible stage (empty)"
-            }
-        }
+  stages {
+    stage('Checkout') {
+      steps {
+        // correctly run checkout inside a node/workspace
+        checkout scm
+      }
     }
 
-    post {
-        success {
-            echo "Pipeline completed successfully."
-        }
+    stage('Build Docker Image') {
+      steps {
+        // intentionally empty
+        echo 'Build stage (no-op)'
+      }
     }
+
+    stage('Docker Login') {
+      steps {
+        echo 'Docker login stage (no-op)'
+      }
+    }
+
+    stage('Push to Docker Hub') {
+      steps {
+        echo 'Push stage (no-op)'
+      }
+    }
+
+    stage('Terraform Apply') {
+      steps {
+        echo 'Terraform stage (no-op)'
+      }
+    }
+
+    stage('Ansible Deploy') {
+      steps {
+        echo 'Ansible stage (no-op)'
+      }
+    }
+  }
+
+  post {
+    success {
+      echo "Pipeline finished successfully."
+    }
+    failure {
+      echo "Pipeline failed."
+    }
+  }
 }
