@@ -1,49 +1,47 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_REPO = "thiluck/disease:latest"
-    }
-
     stages {
         stage('Checkout') {
-            steps {
-                checkout scm
+            steps { 
+                echo "Checkout stage (empty)"
             }
         }
 
         stage('Build Docker Image') {
-            steps {
-                bat '''
-                where docker
-                docker version
-                docker build -t local-disease:build .
-                '''
+            steps { 
+                echo "Build stage (empty)"
             }
         }
 
         stage('Docker Login') {
-            steps {
-                withCredentials([usernamePassword(credentialsId: 'dockerhub-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    bat 'docker login -u %DOCKER_USER% -p %DOCKER_PASS%'
-                }
+            steps { 
+                echo "Docker login stage (empty)"
             }
         }
 
         stage('Push to Docker Hub') {
-            steps {
-                bat '''
-                docker tag local-disease:build %DOCKERHUB_REPO%
-                docker push %DOCKERHUB_REPO%
-                docker manifest inspect %DOCKERHUB_REPO%
-                '''
+            steps { 
+                echo "Push stage (empty)"
+            }
+        }
+
+        stage('Terraform Apply') {
+            steps { 
+                echo "Terraform stage (empty)"
+            }
+        }
+
+        stage('Ansible Deploy') {
+            steps { 
+                echo "Ansible stage (empty)"
             }
         }
     }
 
     post {
         success {
-            echo "✅ Docker image successfully pushed to ${env.DOCKERHUB_REPO}"
+            echo "Pipeline completed successfully."
         }
     }
 }
